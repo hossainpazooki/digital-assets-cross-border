@@ -8,8 +8,8 @@ interface PathwayTimelineProps {
 }
 
 export function PathwayTimeline({ steps, estimatedTimeline }: PathwayTimelineProps) {
-  // Group steps by jurisdiction for summary
-  const jurisdictionSummary = steps.reduce(
+  // Group steps by jurisdiction for summary (reserved for future use)
+  const _jurisdictionSummary = steps.reduce(
     (acc, step) => {
       if (!acc[step.jurisdiction]) {
         acc[step.jurisdiction] = { total: 0, completed: 0, waived: 0 };
