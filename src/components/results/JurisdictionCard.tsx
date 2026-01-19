@@ -90,6 +90,45 @@ export function JurisdictionCard({ result }: JurisdictionCardProps) {
                     <p className="mt-1 text-xs text-slate-500">
                       Rule: {decision.rule_id}
                     </p>
+                    {/* Decision Trace */}
+                    {decision.trace && decision.trace.length > 0 && (
+                      <div className="mt-2 border-t border-slate-700 pt-2">
+                        <p className="mb-1 text-xs font-medium text-slate-400">
+                          Decision Trace:
+                        </p>
+                        <div className="space-y-1">
+                          {decision.trace.map((step, j) => (
+                            <div
+                              key={j}
+                              className="flex items-start gap-2 text-xs"
+                            >
+                              <span
+                                className={`mt-0.5 h-2 w-2 flex-shrink-0 rounded-full ${
+                                  step.result ? 'bg-green-500' : 'bg-red-500'
+                                }`}
+                              />
+                              <div className="flex-1">
+                                <span className="text-slate-300">
+                                  {step.condition}
+                                </span>
+                                {step.explanation && (
+                                  <p className="text-slate-500">
+                                    {step.explanation}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {/* Source Reference */}
+                    {decision.source && (
+                      <p className="mt-1 text-xs text-blue-400">
+                        Source: {decision.source.document_id}
+                        {decision.source.article && ` Art. ${decision.source.article}`}
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>
