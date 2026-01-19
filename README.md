@@ -14,6 +14,9 @@ Cross-border DeFi regulatory compliance navigator. Analyze multi-jurisdiction to
 - **Conflict Detection** - Identify and resolve cross-border regulatory conflicts
 - **What-If Analysis** - Counterfactual scenarios for jurisdiction/entity changes
 - **Decision Decoder** - Tiered explanations (retail, protocol, institutional, regulator)
+- **Contextual Help** - Tooltips and inline guidance for regulatory concepts
+- **Action-Oriented Results** - NextSteps card with prioritized actions
+- **Decision Tree Engine** - Clojure-inspired pure functional rule evaluation with trace generation
 
 ## Architecture
 
@@ -124,14 +127,27 @@ src/
 ├── components/
 │   ├── forms/           # Input components
 │   ├── layout/          # Header, ViewTabs, Footer
-│   ├── results/         # Result display components
-│   └── shared/          # Button, Card, Badge, etc.
+│   ├── results/         # ResultsSummary, NextStepsCard, QuickStats
+│   ├── pathway/         # PathwayTimeline, PathwayStep
+│   ├── conflicts/       # ConflictsList, ConflictCard
+│   └── shared/          # Button, Card, Badge, Tooltip, HelpIcon
+│
+├── lib/
+│   └── decisionTree/    # Clojure-inspired decision engine
+│       ├── evaluator.ts # Pure evaluation functions (getIn, evaluateTree)
+│       └── conflicts.ts # Cross-jurisdiction conflict detection
+│
+├── rules/               # JSON rule definitions
+│   └── mica-stablecoin.json
 │
 ├── hooks/               # React Query mutations
 ├── pages/               # Route pages
 ├── stores/              # Zustand state management
-├── types/               # TypeScript definitions
-├── constants/           # Jurisdictions, instruments
+├── types/               # TypeScript definitions (including decisionTree.ts)
+├── constants/
+│   ├── help/            # Contextual help content
+│   ├── jurisdictions.ts
+│   └── instruments.ts
 └── utils/               # Formatters, classNames
 ```
 
@@ -174,6 +190,30 @@ src/
 npm run build
 # Deploy `dist/` folder to any static host
 ```
+
+## Decision Tree Engine
+
+The frontend includes a Clojure-inspired decision tree engine for client-side rule evaluation:
+
+```typescript
+import { evaluateTree, getIn } from '@/lib/decisionTree';
+import { MICA_STABLECOIN_RULE } from '@/rules';
+
+const facts = {
+  instrument: { type: 'stablecoin', reference_asset: 'fiat_single', reserve_value_eur: 1000000 },
+  issuer: { type: 'credit_institution' }
+};
+
+const { leaf, trace } = evaluateTree(MICA_STABLECOIN_RULE.tree, facts);
+// leaf.decision: "EMT by authorized institution: Notification and whitepaper required"
+// trace: Array of evaluated conditions with source citations
+```
+
+**Key Features:**
+- Pure functions (no side effects)
+- Full evaluation trace for audit trails
+- Clojure-style operators (`eq`, `neq`, `gt`, `in`, `nil?`, `some?`)
+- Partial evaluation for incomplete facts
 
 ## API Integration
 
