@@ -10,13 +10,46 @@ Cross-border DeFi regulatory compliance navigator. Analyze multi-jurisdiction to
 ## Features
 
 - **Multi-Jurisdiction Analysis** - Evaluate compliance across 5 major regulatory frameworks
+- **Decision Canvas** - Three-panel workspace with scenario input, tree visualization, and outcome display
+- **SVG Tree Visualization** - Interactive decision tree with pan/zoom, evaluation path highlighting, and node inspection
 - **Compliance Pathway** - Step-by-step roadmap with timelines and dependencies
-- **Conflict Detection** - Identify and resolve cross-border regulatory conflicts
-- **What-If Analysis** - Counterfactual scenarios for jurisdiction/entity changes
-- **Decision Decoder** - Tiered explanations (retail, protocol, institutional, regulator)
-- **Contextual Help** - Tooltips and inline guidance for regulatory concepts
-- **Action-Oriented Results** - NextSteps card with prioritized actions
-- **Decision Tree Engine** - Clojure-inspired pure functional rule evaluation with trace generation
+- **Conflict Detection** - Identify and resolve cross-border regulatory conflicts with anchor highlighting
+- **What-If Analysis** - Counterfactual scenarios for jurisdiction/entity changes with diff overlay
+- **Decision Decoder** - Tiered explanations with "Canonically Correct Answer" pattern and citation anchoring
+- **Trace Explorer** - Step-by-step visualization of rule evaluation with regulatory citations
+- **Cross-Border Graphs** - Support for GroupNode, RouterNode, and ConflictAnchorNode types
+- **Decision Tree Engine** - Clojure-inspired pure functional rule evaluation with full audit trace
+
+## Decision Canvas
+
+The main workspace is a three-panel layout for regulatory analysis:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         TreeToolbar                              │
+│  [Baseline] [What-If] [Conflicts]  │ Scope: EU  │ 🔍 │ - 100% + │
+├──────────┬────────────────────────────────────────┬─────────────┤
+│          │                                        │             │
+│  Left    │           Center Pane                  │   Right     │
+│  Rail    │                                        │   Rail      │
+│          │     ┌─────────────────────┐           │             │
+│ Scenario │     │   Decision Tree     │           │  Outcome    │
+│ Summary  │     │   Visualization     │           │  Summary    │
+│          │     │                     │           │             │
+│ ──────── │     │   [SVG Canvas]      │           │  ────────   │
+│          │     │   Pan/Zoom/Select   │           │             │
+│ Scenario │     │                     │           │  Decoder    │
+│ Form     │     └─────────────────────┘           │  Panel      │
+│ (expand) │                                        │             │
+│          │     Trace Explorer (sidebar)          │  Citations  │
+│          │                                        │             │
+└──────────┴────────────────────────────────────────┴─────────────┘
+```
+
+**Panels:**
+- **Left Rail** - Scenario input form with collapsible summary
+- **Center Pane** - Interactive SVG tree with evaluation path highlighting
+- **Right Rail** - Canonical outcome + AI explanation with citation anchoring
 
 ## Architecture
 
@@ -83,6 +116,7 @@ sequenceDiagram
 | Styling | Tailwind CSS |
 | State | Zustand |
 | Server State | TanStack React Query |
+| Visualization | Custom SVG (Reingold-Tilford layout) |
 | HTTP Client | Axios |
 | Validation | Zod |
 | CI/CD | GitHub Actions + Vercel |
@@ -125,6 +159,21 @@ src/
 │   └── counterfactual.ts
 │
 ├── components/
+│   ├── canvas/          # Decision Canvas workspace
+│   │   ├── CanvasLayout.tsx      # Three-panel grid layout
+│   │   ├── LeftRail.tsx          # Scenario input panel
+│   │   ├── CenterPane.tsx        # Tree visualization panel
+│   │   ├── RightRail.tsx         # Outcome & decoder panel
+│   │   ├── TreeToolbar.tsx       # View mode, zoom, search controls
+│   │   ├── OutcomeSummary.tsx    # Canonical decision display
+│   │   └── DecoderPanel.tsx      # AI explanation with citations
+│   │
+│   ├── decision-tree/   # SVG tree visualization
+│   │   ├── DecisionTreeViewer.tsx # Main viewer with pan/zoom
+│   │   ├── TreeNode.tsx          # Node rendering (condition/leaf/group)
+│   │   └── TreeEdge.tsx          # Edge rendering with labels
+│   │
+│   ├── trace-explorer/  # Evaluation trace display
 │   ├── forms/           # Input components
 │   ├── layout/          # Header, ViewTabs, Footer
 │   ├── results/         # ResultsSummary, NextStepsCard, QuickStats
@@ -133,17 +182,33 @@ src/
 │   └── shared/          # Button, Card, Badge, Tooltip, HelpIcon
 │
 ├── lib/
-│   └── decisionTree/    # Clojure-inspired decision engine
-│       ├── evaluator.ts # Pure evaluation functions (getIn, evaluateTree)
-│       └── conflicts.ts # Cross-jurisdiction conflict detection
+│   ├── decisionTree/    # Clojure-inspired decision engine
+│   │   ├── evaluator.ts # Pure evaluation functions (getIn, evaluateTree)
+│   │   └── conflicts.ts # Cross-jurisdiction conflict detection
+│   │
+│   └── svg/             # SVG utilities
+│       └── treeLayout.ts # Reingold-Tilford tree layout algorithm
 │
 ├── rules/               # JSON rule definitions
 │   └── mica-stablecoin.json
 │
-├── hooks/               # React Query mutations
+├── hooks/               # React Query mutations + canvas hooks
+│   ├── useCanvasState.ts    # Canvas UI state management
+│   ├── useTreeHighlight.ts  # Tree node highlighting
+│   ├── useDecoderAnchors.ts # Citation-to-node mapping
+│   └── usePanelState.ts     # Panel expand/collapse state
+│
 ├── pages/               # Route pages
 ├── stores/              # Zustand state management
-├── types/               # TypeScript definitions (including decisionTree.ts)
+│   ├── navigationStore.ts   # Scenario inputs
+│   ├── resultsStore.ts      # Analysis results
+│   └── uiStore.ts           # UI preferences
+│
+├── types/               # TypeScript definitions
+│   ├── decisionTree.ts  # DecisionNode union (Condition|Leaf|Group|Router|ConflictAnchor)
+│   ├── canvas.ts        # Canvas state types
+│   └── common.ts        # Shared types (JurisdictionCode, ConflictType, etc.)
+│
 ├── constants/
 │   ├── help/            # Contextual help content
 │   ├── jurisdictions.ts
@@ -214,6 +279,34 @@ const { leaf, trace } = evaluateTree(MICA_STABLECOIN_RULE.tree, facts);
 - Full evaluation trace for audit trails
 - Clojure-style operators (`eq`, `neq`, `gt`, `in`, `nil?`, `some?`)
 - Partial evaluation for incomplete facts
+
+### Node Types
+
+| Type | Description |
+|------|-------------|
+| `ConditionNode` | Binary decision node with true/false branches |
+| `LeafNode` | Terminal node with decision outcome and obligations |
+| `GroupNode` | Collapsible jurisdiction module (e.g., "EU MiCA Module") |
+| `RouterNode` | Parallel dispatch to jurisdiction-specific subtrees |
+| `ConflictAnchorNode` | Marks nodes involved in cross-jurisdiction conflicts |
+
+### TraceNode Metadata
+
+Each trace step includes regulatory metadata for audit trails:
+
+```typescript
+interface TraceNode {
+  nodeId: string;
+  condition: string;
+  factPath: string;
+  factValue: unknown;
+  result: boolean;
+  sourceRef?: SourceReference;     // Regulatory citation
+  annotationId?: string;           // Digital Library link
+  regulatoryVersion?: string;      // e.g., "MiCA_2023_v1.2"
+  interpretationNote?: string;     // KE reasoning
+}
+```
 
 ## API Integration
 
