@@ -89,7 +89,7 @@ export function CenterPane() {
                   tree={MICA_STABLECOIN_RULE.tree}
                   trace={demoEvaluation?.trace}
                   highlightedNodeIds={tree.highlightedNodeIds}
-                  highlightSource={tree.highlightSource}
+                  highlightSource={tree.highlightSource ?? undefined}
                   onNodeSelect={(node) => selectNode(node.nodeId)}
                 />
               ) : (
