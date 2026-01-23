@@ -60,8 +60,8 @@ export function CenterPane() {
         </div>
       </div>
 
-      {/* Main content area */}
-      <div className="flex flex-1 overflow-hidden">
+      {/* Main content area - vertical layout */}
+      <div className="flex flex-1 flex-col overflow-hidden">
         {/* Tree visualization */}
         <div className="flex-1 overflow-auto p-4">
           {canvas.uiState === 'loading' ? (
@@ -112,19 +112,22 @@ export function CenterPane() {
           )}
         </div>
 
-        {/* Trace explorer sidebar (compact) */}
+        {/* Trace explorer below tree */}
         {hasResult && demoEvaluation?.trace && (
-          <div className="w-80 shrink-0 overflow-y-auto border-l border-slate-700 bg-slate-800/30">
-            <div className="border-b border-slate-700 px-4 py-2">
-              <h3 className="text-sm font-medium text-slate-300">
-                Trace ({demoEvaluation.trace.length} steps)
-              </h3>
-            </div>
-            <div className="p-2">
-              <TraceExplorer
-                trace={demoEvaluation.trace}
-                finalNode={demoEvaluation.leaf}
-              />
+          <div className="h-36 shrink-0 overflow-x-auto border-t border-slate-700 bg-slate-800/30">
+            <div className="flex h-full">
+              <div className="flex items-center border-r border-slate-700 px-4">
+                <h3 className="text-sm font-medium text-slate-300">
+                  Trace ({demoEvaluation.trace.length} steps)
+                </h3>
+              </div>
+              <div className="flex-1 overflow-x-auto p-2">
+                <TraceExplorer
+                  trace={demoEvaluation.trace}
+                  finalNode={demoEvaluation.leaf}
+                  horizontal
+                />
+              </div>
             </div>
           </div>
         )}

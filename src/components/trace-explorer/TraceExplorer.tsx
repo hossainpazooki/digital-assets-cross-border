@@ -8,6 +8,7 @@ interface TraceExplorerProps {
   title?: string;
   highlightedNodeId?: string | null;
   onNodeHover?: (nodeId: string | null) => void;
+  horizontal?: boolean;
 }
 
 /**
@@ -32,19 +33,65 @@ export function TraceExplorer({
   title = 'Decision Trace',
   highlightedNodeId,
   onNodeHover,
+  horizontal = false,
 }: TraceExplorerProps) {
   if (trace.length === 0) {
     return (
-      <Card variant="bordered">
-        <CardContent>
-          <p className="text-center text-slate-400 py-4">
-            No evaluation trace available.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center p-4 text-slate-400">
+        No evaluation trace available.
+      </div>
     );
   }
 
+  // Horizontal layout for bottom panel
+  if (horizontal) {
+    return (
+      <div className="flex h-full items-center gap-2">
+        {trace.map((step, index) => (
+          <div key={step.nodeId} className="flex items-center gap-2">
+            <div
+              className={`shrink-0 rounded-lg border px-3 py-2 text-xs transition-colors ${
+                highlightedNodeId === step.nodeId
+                  ? 'border-purple-500 bg-purple-500/20'
+                  : step.result
+                    ? 'border-emerald-500/50 bg-emerald-500/10'
+                    : 'border-slate-600 bg-slate-800/50'
+              }`}
+              onMouseEnter={() => onNodeHover?.(step.nodeId)}
+              onMouseLeave={() => onNodeHover?.(null)}
+            >
+              <div className="font-medium text-slate-200 whitespace-nowrap">
+                {step.condition}
+              </div>
+              <div className={`text-xs ${step.result ? 'text-emerald-400' : 'text-red-400'}`}>
+                {step.result ? 'Yes' : 'No'}
+              </div>
+            </div>
+            {index < trace.length - 1 && (
+              <span className="text-slate-500">→</span>
+            )}
+          </div>
+        ))}
+        {finalNode && (
+          <>
+            <span className="text-slate-500">→</span>
+            <div className="shrink-0 rounded-lg border border-amber-500/50 bg-amber-500/10 px-3 py-2">
+              <div className="flex items-center gap-2">
+                <Badge variant={getStatusVariant(finalNode.status)} size="sm">
+                  {finalNode.status.replace(/_/g, ' ')}
+                </Badge>
+              </div>
+              <div className="mt-1 text-xs text-slate-300 max-w-48 truncate">
+                {finalNode.decision}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  // Vertical layout (original)
   return (
     <Card variant="bordered">
       <CardHeader>
