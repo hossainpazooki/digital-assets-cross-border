@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from 'react';
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import type { DecisionNode, TraceNode, LeafNode, ConditionNode } from '@/types/decisionTree';
 import type { JurisdictionCode } from '@/types/common';
 import { isLeafNode, isGroupNode } from '@/types/decisionTree';
@@ -77,8 +77,9 @@ export function DecisionTreeViewer({
   className,
 }: DecisionTreeViewerProps) {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [internalTransform, setInternalTransform] = useState<Transform>({ x: 0, y: 0, scale: 1 });
+  const [internalTransform, setInternalTransform] = useState<Transform>({ x: 0, y: 0, scale: 0.65 });
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [hasInitialized, setHasInitialized] = useState(false);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -124,6 +125,25 @@ export function DecisionTreeViewer({
   const layout = useMemo(() => {
     return calculateLayout(tree, DEFAULT_LAYOUT_CONFIG, allHighlightedIds);
   }, [tree, allHighlightedIds]);
+
+  // Center root node at top on initial load
+  useEffect(() => {
+    if (hasInitialized || !svgRef.current || layout.nodes.length === 0) return;
+
+    const svgRect = svgRef.current.getBoundingClientRect();
+    const rootNode = layout.nodes[0];
+    const scale = 0.65;
+
+    // Center horizontally: position root node center at SVG center
+    const rootCenterX = rootNode.x + rootNode.width / 2;
+    const x = (svgRect.width / 2) - (rootCenterX * scale);
+
+    // Position root near top with some padding
+    const y = 40 - (rootNode.y * scale);
+
+    setInternalTransform({ x, y, scale });
+    setHasInitialized(true);
+  }, [layout, hasInitialized]);
 
   // Find node by ID (handles all node types including GroupNode)
   const findNodeById = useCallback((nodeId: string): DecisionNode | null => {
@@ -232,10 +252,23 @@ export function DecisionTreeViewer({
     }));
   }, []);
 
-  // Reset view
+  // Reset view to centered root at 65%
   const handleReset = useCallback(() => {
-    setTransform({ x: 0, y: 0, scale: 1 });
-  }, []);
+    if (!svgRef.current || layout.nodes.length === 0) {
+      setTransform({ x: 0, y: 0, scale: 0.65 });
+      return;
+    }
+
+    const svgRect = svgRef.current.getBoundingClientRect();
+    const rootNode = layout.nodes[0];
+    const scale = 0.65;
+
+    const rootCenterX = rootNode.x + rootNode.width / 2;
+    const x = (svgRect.width / 2) - (rootCenterX * scale);
+    const y = 40 - (rootNode.y * scale);
+
+    setTransform({ x, y, scale });
+  }, [layout, setTransform]);
 
   // Zoom controls
   const handleZoomIn = useCallback(() => {
