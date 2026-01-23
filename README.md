@@ -10,20 +10,7 @@
 
 ## Overview
 
-```
-┌────────────┬──────────────────────────┬────────────┐
-│  Scenario  │      Decision Tree       │  Outcome   │
-│   Builder  │    ┌───┐                 │  Summary   │
-│            │    │ ? │ root            │            │
-│  Home: CH  │   ┌┴───┴┐                │  Status:   │
-│  Target:EU │  yes    no               │  COMPLIANT │
-│            │ ┌─┴─┐  ┌─┴─┐             │            │
-│  [Analyze] │ │ ✓ │  │ ? │             │  [Decode]  │
-│            │ └───┘  └───┘             │            │
-├────────────┴──────────────────────────┴────────────┤
-│  Trace: [Cond1] → [Cond2] → [Cond3] → [COMPLIANT]  │
-└────────────────────────────────────────────────────┘
-```
+[![Decision Canvas](docs/screenshot.png)](https://defi-compliance-navigator.vercel.app)
 
 ## Features
 
