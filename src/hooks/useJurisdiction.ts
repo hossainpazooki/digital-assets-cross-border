@@ -1,10 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { jurisdictionApi } from '@/api';
 import { useResultsStore, useNavigationStore } from '@/stores';
-import type {
-  JurisdictionConflictsRequest,
-  JurisdictionConflictsResponse,
-} from '@/types/jurisdiction';
+import type { JurisdictionConflictsRequest } from '@/types/jurisdiction';
 
 export function useJurisdictionConflicts() {
   const { setJurisdictionConflicts, setCheckingConflicts, setConflictsError } =
