@@ -1,6 +1,7 @@
 import { useScenarioForm } from '@/hooks/useScenarioForm';
-import { usePanelState } from '@/hooks/useCanvas';
-import { Button, Tooltip, HelpIcon } from '@/components/shared';
+import { usePanelState, useJurisdictionConflicts } from '@/hooks';
+import { useResultsStore } from '@/stores';
+import { Button, Tooltip, HelpIcon, Badge } from '@/components/shared';
 import {
   SingleJurisdictionSelector,
   JurisdictionSelector,
@@ -35,9 +36,13 @@ export function ScenarioBuilder({ className }: ScenarioBuilderProps) {
   const { form, handlers, canSubmit, isPending, isStale, missingFacts, handleSubmit } =
     useScenarioForm();
   const { isExpanded, expandPanel } = usePanelState();
+  const { checkConflicts, isLoading: isCheckingConflicts } = useJurisdictionConflicts();
+  const { jurisdictionConflicts, conflictsError } = useResultsStore();
 
   const panelExpanded = isExpanded('leftRail');
   const handleExpand = () => expandPanel('leftRail');
+
+  const canCheckConflicts = form.targetJurisdictions.length >= 2;
 
   // Show summary in collapsed state
   if (!panelExpanded) {
@@ -219,14 +224,60 @@ export function ScenarioBuilder({ className }: ScenarioBuilderProps) {
               Missing: {missingFacts.join(', ')}
             </p>
           )}
-          <Button
-            type="submit"
-            isLoading={isPending}
-            disabled={!canSubmit}
-            className={cn('w-full', isStale && 'animate-pulse bg-amber-600 hover:bg-amber-500')}
-          >
-            {isPending ? 'Running...' : isStale ? 'Run Analysis' : 'Run Cross-Border Analysis'}
-          </Button>
+
+          {/* Conflict Preview Results */}
+          {jurisdictionConflicts && (
+            <div className="mb-3 rounded-lg border border-slate-700 bg-slate-800/50 p-3">
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-slate-400">Conflicts Preview:</span>
+                {jurisdictionConflicts.blocking_count > 0 && (
+                  <Badge variant="error" size="sm">
+                    {jurisdictionConflicts.blocking_count} blocking
+                  </Badge>
+                )}
+                {jurisdictionConflicts.warning_count > 0 && (
+                  <Badge variant="warning" size="sm">
+                    {jurisdictionConflicts.warning_count} warnings
+                  </Badge>
+                )}
+                {jurisdictionConflicts.blocking_count === 0 && jurisdictionConflicts.warning_count === 0 && (
+                  <Badge variant="success" size="sm">No conflicts</Badge>
+                )}
+              </div>
+              {jurisdictionConflicts.conflicts.slice(0, 2).map((c, i) => (
+                <p key={i} className="mt-1 text-xs text-slate-500 truncate">
+                  {c.description}
+                </p>
+              ))}
+            </div>
+          )}
+
+          {conflictsError && (
+            <p className="mb-2 text-xs text-red-400">
+              Preview error: {conflictsError}
+            </p>
+          )}
+
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => checkConflicts()}
+              isLoading={isCheckingConflicts}
+              disabled={!canCheckConflicts}
+              className="flex-1"
+            >
+              Preview Conflicts
+            </Button>
+            <Button
+              type="submit"
+              isLoading={isPending}
+              disabled={!canSubmit}
+              className={cn('flex-1', isStale && 'animate-pulse bg-amber-600 hover:bg-amber-500')}
+            >
+              {isPending ? 'Running...' : 'Run'}
+            </Button>
+          </div>
         </div>
       </form>
     </div>

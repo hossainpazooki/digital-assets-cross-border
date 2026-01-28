@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import type { NavigateResponse } from '@/types/navigate';
 import type { DecoderResponse } from '@/types/decoder';
 import type { CounterfactualResponse } from '@/types/counterfactual';
+import type { JurisdictionConflictsResponse } from '@/types/jurisdiction';
 
 interface ResultsState {
   // Navigation results
@@ -19,6 +20,11 @@ interface ResultsState {
   isAnalyzing: boolean;
   counterfactualError: string | null;
 
+  // Jurisdiction conflicts (preview)
+  jurisdictionConflicts: JurisdictionConflictsResponse | null;
+  isCheckingConflicts: boolean;
+  conflictsError: string | null;
+
   // Computed
   analysisComplete: boolean;
 
@@ -32,6 +38,9 @@ interface ResultsState {
   addCounterfactualResult: (result: CounterfactualResponse) => void;
   setAnalyzing: (loading: boolean) => void;
   setCounterfactualError: (error: string | null) => void;
+  setJurisdictionConflicts: (result: JurisdictionConflictsResponse) => void;
+  setCheckingConflicts: (loading: boolean) => void;
+  setConflictsError: (error: string | null) => void;
   clearResults: () => void;
 }
 
@@ -45,6 +54,9 @@ export const useResultsStore = create<ResultsState>((set) => ({
   counterfactualResults: [],
   isAnalyzing: false,
   counterfactualError: null,
+  jurisdictionConflicts: null,
+  isCheckingConflicts: false,
+  conflictsError: null,
   analysisComplete: false,
 
   setNavigationResult: (result) =>
@@ -82,14 +94,28 @@ export const useResultsStore = create<ResultsState>((set) => ({
   setCounterfactualError: (error) =>
     set({ counterfactualError: error, isAnalyzing: false }),
 
+  setJurisdictionConflicts: (result) =>
+    set({
+      jurisdictionConflicts: result,
+      isCheckingConflicts: false,
+      conflictsError: null,
+    }),
+
+  setCheckingConflicts: (loading) => set({ isCheckingConflicts: loading }),
+
+  setConflictsError: (error) =>
+    set({ conflictsError: error, isCheckingConflicts: false }),
+
   clearResults: () =>
     set({
       navigationResult: null,
       decoderResult: null,
       counterfactualResults: [],
+      jurisdictionConflicts: null,
       analysisComplete: false,
       navigationError: null,
       decoderError: null,
       counterfactualError: null,
+      conflictsError: null,
     }),
 }));

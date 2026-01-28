@@ -11,7 +11,7 @@ import { useResultsStore } from '@/stores';
 import { Badge, Button, LoadingSpinner } from '@/components/shared';
 import { WorkbenchArea } from './CanvasLayout';
 import { PanelHeader } from './PanelHeader';
-import { JURISDICTION_MAP } from '@/constants';
+import { JURISDICTION_MAP, JURISDICTION_LIST } from '@/constants';
 import type { ScenarioType } from '@/types/common';
 
 type WorkbenchTab = 'jurisdictions' | 'pathway' | 'conflicts' | 'whatif';
@@ -276,11 +276,11 @@ export function BottomWorkbench() {
                             onChange={(e) => setScenarioParams({ target_jurisdiction: e.target.value })}
                           >
                             <option value="">Select jurisdiction...</option>
-                            <option value="US">United States</option>
-                            <option value="UK">United Kingdom</option>
-                            <option value="SG">Singapore</option>
-                            <option value="CH">Switzerland</option>
-                            <option value="JP">Japan</option>
+                            {JURISDICTION_LIST.map((j) => (
+                              <option key={j.code} value={j.code}>
+                                {j.flag} {j.name}
+                              </option>
+                            ))}
                           </select>
                         )}
                         {selectedScenarioType === 'entity_change' && (

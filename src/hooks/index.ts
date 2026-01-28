@@ -12,3 +12,6 @@ export { useTreeNavigation } from './useTreeNavigation';
 
 // Phase 5: Decoder anchoring hook
 export { useDecoderAnchors } from './useDecoderAnchors';
+
+// Jurisdiction conflict preview
+export { useJurisdictionConflicts } from './useJurisdiction';
