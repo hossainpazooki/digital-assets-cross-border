@@ -1,17 +1,17 @@
-export { useNavigate } from './useNavigate';
-export { useDecoder } from './useDecoder';
-export { useCounterfactual } from './useCounterfactual';
-export { useEvaluationQuery } from './useEvaluationQuery';
-export { useCanvas, usePanelState, useTreeHighlight, useCanvasState } from './useCanvas';
+/**
+ * Central hooks barrel export
+ * Re-exports hooks from context and feature modules
+ */
 
-// Phase 3: Scenario form hook
-export { useScenarioForm } from './useScenarioForm';
+// Canvas context hooks
+export {
+  useCanvasContext,
+  usePanelState,
+  useCanvasState,
+  useTreeHighlight,
+} from './useCanvasContext';
 
-// Phase 4: Tree navigation hook
-export { useTreeNavigation } from './useTreeNavigation';
-
-// Phase 5: Decoder anchoring hook
-export { useDecoderAnchors } from './useDecoderAnchors';
-
-// Jurisdiction conflict preview
-export { useJurisdictionConflicts } from './useJurisdiction';
+// Feature hooks - re-exported for convenience
+export { useNavigate } from '@features/navigation/model/useNavigate';
+export { useJurisdictionConflicts } from '@features/navigation/model/useJurisdiction';
+export { useDecoderAnchors } from '@features/decoder/model/useDecoderAnchors';

@@ -1,0 +1,72 @@
+import type { JurisdictionCode, JurisdictionInfo } from './types';
+
+export const JURISDICTIONS: Record<JurisdictionCode, JurisdictionInfo> = {
+  EU: {
+    code: 'EU',
+    name: 'European Union',
+    authority: 'ESMA',
+    framework: 'MiCA 2023',
+    flag: '🇪🇺',
+    color: 'eu',
+  },
+  UK: {
+    code: 'UK',
+    name: 'United Kingdom',
+    authority: 'FCA',
+    framework: 'FCA Crypto 2024',
+    flag: '🇬🇧',
+    color: 'uk',
+  },
+  US: {
+    code: 'US',
+    name: 'United States',
+    authority: 'SEC/CFTC',
+    framework: 'Securities Act 1933',
+    flag: '🇺🇸',
+    color: 'us',
+  },
+  CH: {
+    code: 'CH',
+    name: 'Switzerland',
+    authority: 'FINMA',
+    framework: 'FINSA/DLT 2021',
+    flag: '🇨🇭',
+    color: 'ch',
+  },
+  SG: {
+    code: 'SG',
+    name: 'Singapore',
+    authority: 'MAS',
+    framework: 'PSA 2019',
+    flag: '🇸🇬',
+    color: 'sg',
+  },
+};
+
+export const JURISDICTION_LIST: JurisdictionInfo[] = Object.values(JURISDICTIONS);
+
+export function getJurisdictionInfo(code: JurisdictionCode): JurisdictionInfo {
+  return JURISDICTIONS[code];
+}
+
+export function getJurisdictionColor(code: JurisdictionCode): string {
+  const colors: Record<JurisdictionCode, string> = {
+    EU: 'bg-blue-500',
+    UK: 'bg-red-500',
+    US: 'bg-green-500',
+    CH: 'bg-amber-500',
+    SG: 'bg-violet-500',
+  };
+  return colors[code] || 'bg-gray-500';
+}
+
+export function getJurisdictionTextColor(code: JurisdictionCode): string {
+  const colors: Record<JurisdictionCode, string> = {
+    EU: 'text-blue-400',
+    UK: 'text-red-400',
+    US: 'text-green-400',
+    CH: 'text-amber-400',
+    SG: 'text-violet-400',
+  };
+  return colors[code] || 'text-gray-400';
+}

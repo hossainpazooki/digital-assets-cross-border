@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useResultsStore } from '@/stores';
-import { useCounterfactual } from '@/hooks';
-import { Card, CardHeader, CardTitle, CardContent, Badge, Button } from '@/components/shared';
-import { JURISDICTION_LIST } from '@/constants';
-import { cn } from '@/utils';
+import { useResultsStore } from '@features/navigation/model';
+import { useCounterfactual } from '@features/counterfactual/model';
+import { Card, CardHeader, CardTitle, CardContent, Badge, Button } from '@shared/ui';
+import { JURISDICTION_LIST } from '@entities/jurisdiction/model';
+import { cn } from '@shared/lib';
 import type { ScenarioType } from '@/types/common';
 
 const SCENARIO_OPTIONS: Array<{

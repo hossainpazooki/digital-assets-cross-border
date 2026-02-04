@@ -1,7 +1,6 @@
-import { NavigationForm } from '@/components/forms';
-import { ResultsSummary } from '@/components/results';
-import { useResultsStore } from '@/stores';
-import { Card, CardContent } from '@/components/shared';
+import { NavigationForm, ResultsSummary } from '@features/navigation';
+import { useResultsStore } from '@features/navigation/model';
+import { Card, CardContent } from '@shared/ui';
 
 export function Navigator() {
   const { analysisComplete, navigationError, isNavigating } = useResultsStore();

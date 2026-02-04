@@ -1,6 +1,5 @@
-import { useResultsStore } from '@/stores';
-import { Card, CardContent } from '@/components/shared';
-import { ConflictsList } from '@/components/conflicts';
+import { useResultsStore, ConflictsList } from '@features/navigation';
+import { Card, CardContent } from '@shared/ui';
 
 export function Conflicts() {
   const { navigationResult } = useResultsStore();

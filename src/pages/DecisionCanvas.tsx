@@ -3,7 +3,7 @@
  * Single-screen compliance workstation with 3-column + workbench layout
  */
 
-import { CanvasProvider } from '@/contexts';
+import { CanvasProvider } from '@app/contexts';
 import {
   CanvasHeader,
   CanvasLayout,
@@ -11,7 +11,7 @@ import {
   CenterPane,
   RightRail,
   BottomWorkbench,
-} from '@/components/canvas';
+} from '@app/layouts';
 
 export function DecisionCanvas() {
   return (

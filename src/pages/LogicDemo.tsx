@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
-import { DecisionTreeViewer } from '@/components/decision-tree';
-import { TraceExplorer } from '@/components/trace-explorer';
-import { Card, CardHeader, CardTitle, CardContent, Button } from '@/components/shared';
-import { evaluateTree } from '@/lib/decisionTree';
-import { MICA_STABLECOIN_RULE } from '@/rules';
+import { DecisionTreeViewer, evaluateTree } from '@features/decision-tree';
+import { TraceExplorer } from '@features/trace-explorer';
+import { Card, CardHeader, CardTitle, CardContent, Button } from '@shared/ui';
+import { MICA_STABLECOIN_RULE } from '@features/decision-tree/data';
+import type { DecisionNode } from '@/types/decisionTree';
 
 // Sample facts for demo
 const SAMPLE_FACTS = {
@@ -65,7 +65,7 @@ export function LogicDemo() {
   // Evaluate the tree with selected facts
   const { leaf, trace } = useMemo(() => {
     const scenario = SAMPLE_FACTS[selectedScenario];
-    return evaluateTree(MICA_STABLECOIN_RULE.tree, scenario.facts);
+    return evaluateTree(MICA_STABLECOIN_RULE.tree as DecisionNode, scenario.facts);
   }, [selectedScenario]);
 
   return (
@@ -118,7 +118,7 @@ export function LogicDemo() {
       <div className="grid grid-cols-2 gap-6">
         {/* Decision Tree */}
         <DecisionTreeViewer
-          tree={MICA_STABLECOIN_RULE.tree}
+          tree={MICA_STABLECOIN_RULE.tree as DecisionNode}
           trace={trace}
           finalNode={leaf}
           title="MiCA Stablecoin Authorization"

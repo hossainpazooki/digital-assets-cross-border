@@ -1,7 +1,6 @@
-import { useResultsStore } from '@/stores';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/shared';
-import { PathwayTimeline } from '@/components/pathway';
-import { getJurisdictionInfo } from '@/constants';
+import { useResultsStore, PathwayTimeline } from '@features/navigation';
+import { Card, CardHeader, CardTitle, CardContent } from '@shared/ui';
+import { getJurisdictionInfo } from '@entities/jurisdiction/model';
 
 export function Pathway() {
   const { navigationResult } = useResultsStore();

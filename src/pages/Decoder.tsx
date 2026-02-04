@@ -1,7 +1,8 @@
-import { useResultsStore, useUIStore } from '@/stores';
-import { useDecoder } from '@/hooks';
-import { Card, CardHeader, CardTitle, CardContent, Badge, Button } from '@/components/shared';
-import { cn } from '@/utils';
+import { useResultsStore } from '@features/navigation/model';
+import { useUIStore } from '@app/stores';
+import { useDecoder } from '@features/decoder/model';
+import { Card, CardHeader, CardTitle, CardContent, Badge, Button } from '@shared/ui';
+import { cn } from '@shared/lib';
 import type { ExplanationTier } from '@/types/common';
 
 const TIERS: Array<{
